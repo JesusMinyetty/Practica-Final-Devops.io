@@ -1,0 +1,38 @@
+name: CI/CD Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build Docker image
+      run: docker build -t hyderex/practica-final-devops:latest .
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.hyderex}}
+        password: ${{ secrets.Mangos}}
+
+    - name: Push Docker image to Docker Hub
+      run: docker push hyderex/practica-final-devops:latest
